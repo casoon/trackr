@@ -1,6 +1,6 @@
 {
   "name": "@casoon/trackr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Privacy-first, GDPR-native analytics for static sites.",
   "author": "Joern Seidel <joern@casoon.de>",
   "license": "LGPL-3.0-or-later",
