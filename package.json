@@ -1,0 +1,59 @@
+{
+  "name": "@casoon/trackr",
+  "version": "0.1.0",
+  "description": "Privacy-first, GDPR-native analytics for static sites.",
+  "author": "Joern Seidel <joern@casoon.de>",
+  "license": "LGPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js"
+    },
+    "./storage/postgres": {
+      "types": "./dist/storage/postgres.d.ts",
+      "import": "./dist/storage/postgres.js"
+    },
+    "./storage/api": {
+      "types": "./dist/storage/api.d.ts",
+      "import": "./dist/storage/api.js"
+    }
+  },
+  "files": [
+    "dist",
+    "script.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.16.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "optionalDependencies": {
+    "pg": "^8.13.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@9.15.1",
+  "volta": {
+    "node": "24.0.0"
+  }
+}
