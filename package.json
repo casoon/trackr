@@ -37,9 +37,13 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check",
+    "lint:fix": "biome check --fix",
+    "format": "biome format --write"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.8",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.16.0",
     "tsup": "^8.3.5",

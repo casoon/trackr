@@ -10,15 +10,15 @@ export function api(config: ApiConfig): StorageAdapter {
   return {
     async save(event: TrackrEvent): Promise<void> {
       const body = config.transform ? config.transform(event) : event;
-      
+
       await fetch(config.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...config.headers
+          ...config.headers,
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
-    }
+    },
   };
 }

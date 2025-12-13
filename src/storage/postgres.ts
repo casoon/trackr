@@ -1,26 +1,30 @@
-import type { StorageAdapter, TrackrEvent, QueryOptions } from "../types.js";
+import type { QueryOptions, StorageAdapter, TrackrEvent } from "../types.js";
 
 interface PostgresClient {
   query(text: string, values?: unknown[]): Promise<{ rows: unknown[] }>;
 }
 
-export function postgres(connectionStringOrClient: string | PostgresClient): StorageAdapter {
+export function postgres(
+  connectionStringOrClient: string | PostgresClient,
+): StorageAdapter {
   let client: PostgresClient | null = null;
-  
+
   const getClient = async (): Promise<PostgresClient> => {
     if (client) return client;
-    
+
     if (typeof connectionStringOrClient === "string") {
       const pg = await import("pg");
-      const pool = new pg.default.Pool({ connectionString: connectionStringOrClient });
+      const pool = new pg.default.Pool({
+        connectionString: connectionStringOrClient,
+      });
       client = pool;
       return pool;
     }
-    
+
     client = connectionStringOrClient;
     return client;
   };
-  
+
   return {
     async save(event: TrackrEvent): Promise<void> {
       const db = await getClient();
@@ -37,17 +41,17 @@ export function postgres(connectionStringOrClient: string | PostgresClient): Sto
           event.browser || null,
           event.sessionId || null,
           JSON.stringify(event.props || {}),
-          event.ts
-        ]
+          event.ts,
+        ],
       );
     },
-    
+
     async query(options: QueryOptions): Promise<TrackrEvent[]> {
       const db = await getClient();
       const conditions: string[] = [];
       const values: unknown[] = [];
       let i = 1;
-      
+
       if (options.from) {
         conditions.push(`ts >= $${i++}`);
         values.push(options.from);
@@ -60,16 +64,18 @@ export function postgres(connectionStringOrClient: string | PostgresClient): Sto
         conditions.push(`type = $${i++}`);
         values.push(options.type);
       }
-      
-      const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+      const where = conditions.length
+        ? `WHERE ${conditions.join(" AND ")}`
+        : "";
       const limit = options.limit ? `LIMIT ${options.limit}` : "";
-      
+
       const result = await db.query(
         `SELECT * FROM trackr_events ${where} ORDER BY ts DESC ${limit}`,
-        values
+        values,
       );
-      
+
       return result.rows as TrackrEvent[];
-    }
+    },
   };
 }

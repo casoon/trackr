@@ -11,7 +11,10 @@ export function init(options: TrackrConfig): void {
   }
 }
 
-export function track(name: string, props?: Record<string, string | number | boolean>): void {
+export function track(
+  name: string,
+  props?: Record<string, string | number | boolean>,
+): void {
   if (!config) {
     console.warn("[trackr] Not initialized. Call init() first.");
     return;
@@ -22,7 +25,7 @@ export function track(name: string, props?: Record<string, string | number | boo
     name,
     url: getPath(),
     props,
-    ts: Date.now()
+    ts: Date.now(),
   });
 }
 
@@ -34,9 +37,11 @@ function trackPageview(): void {
   sendEvent({
     type: "pageview",
     url: getPath(),
-    referrer: document.referrer ? new URL(document.referrer).hostname : undefined,
+    referrer: document.referrer
+      ? new URL(document.referrer).hostname
+      : undefined,
     ...(Object.keys(utm).length > 0 && { utm }),
-    ts: Date.now()
+    ts: Date.now(),
   });
 }
 
@@ -47,7 +52,13 @@ function getPath(): string {
 function getUtmParams(): Record<string, string> {
   const params = new URLSearchParams(window.location.search);
   const utm: Record<string, string> = {};
-  const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+  const keys = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+  ];
 
   for (const key of keys) {
     const value = params.get(key);
@@ -69,7 +80,7 @@ function sendEvent(event: Record<string, unknown>): void {
       method: "POST",
       body,
       keepalive: true,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     }).catch(() => {});
   }
 

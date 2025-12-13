@@ -1,11 +1,10 @@
-export type {
-  TrackrEvent,
-  TrackrConfig,
-  StorageAdapter,
-  QueryOptions,
-  PrivacyConfig,
-  HandlerConfig
-} from "./types.js";
-
 export { init, track } from "./client/index.js";
 export { createHandler } from "./server/index.js";
+export type {
+  HandlerConfig,
+  PrivacyConfig,
+  QueryOptions,
+  StorageAdapter,
+  TrackrConfig,
+  TrackrEvent,
+} from "./types.js";

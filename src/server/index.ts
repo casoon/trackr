@@ -11,7 +11,9 @@ interface RawEvent {
   props?: Record<string, string | number | boolean>;
 }
 
-export function createHandler(config: HandlerConfig): (request: Request) => Promise<Response> {
+export function createHandler(
+  config: HandlerConfig,
+): (request: Request) => Promise<Response> {
   return async (request: Request): Promise<Response> => {
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
@@ -22,7 +24,7 @@ export function createHandler(config: HandlerConfig): (request: Request) => Prom
     }
 
     try {
-      const body = await request.json() as unknown;
+      const body = (await request.json()) as unknown;
 
       if (!isValidEvent(body)) {
         return new Response("Invalid event", { status: 400 });
@@ -34,16 +36,17 @@ export function createHandler(config: HandlerConfig): (request: Request) => Prom
         url: body.url,
         referrer: body.referrer,
         props: body.props,
-        ts: body.ts
+        ts: body.ts,
       };
 
       if (config.privacy) {
         event = applyPrivacy(event, config.privacy);
       }
 
-      const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-        || request.headers.get("x-real-ip")
-        || "0.0.0.0";
+      const ip =
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        request.headers.get("x-real-ip") ||
+        "0.0.0.0";
       const ua = request.headers.get("user-agent") || "";
       const today = new Date().toISOString().split("T")[0];
 
@@ -66,7 +69,11 @@ export function createHandler(config: HandlerConfig): (request: Request) => Prom
 function isValidEvent(e: unknown): e is RawEvent {
   if (typeof e !== "object" || e === null) return false;
   const obj = e as Record<string, unknown>;
-  return typeof obj.type === "string" && typeof obj.url === "string" && typeof obj.ts === "number";
+  return (
+    typeof obj.type === "string" &&
+    typeof obj.url === "string" &&
+    typeof obj.ts === "number"
+  );
 }
 
 function detectDevice(ua: string): "desktop" | "mobile" | "tablet" {
@@ -84,4 +91,4 @@ function detectBrowser(ua: string): string {
 }
 
 export { isBot } from "./bot.js";
-export { anonymizeIp, stripPii, applyPrivacy } from "./privacy.js";
+export { anonymizeIp, applyPrivacy, stripPii } from "./privacy.js";
