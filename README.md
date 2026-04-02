@@ -4,8 +4,6 @@ Privacy-first, GDPR-native analytics for static sites. No cookies, no persistent
 
 ## Live Demo
 
-Test the library in action:
-
 - [Homepage (Pageview)](https://trackr-demo.casoon.dev/)
 - [Shop (E-Commerce Events)](https://trackr-demo.casoon.dev/shop)
 - [Landing (Lead Forms)](https://trackr-demo.casoon.dev/landing)
@@ -20,8 +18,12 @@ Test the library in action:
 - **Lightweight** - Client script < 1KB gzipped
 - **Self-Hosted** - Your data stays on your infrastructure
 - **UTM Tracking** - Automatic extraction of campaign parameters
+- **SPA Support** - Auto-tracks `pushState`/`replaceState`/`hashchange` navigation
+- **OS Detection** - Server-side detection (Android, iOS, Windows, macOS, Linux, ChromeOS)
+- **Bot Filtering** - Common crawlers and headless browsers excluded
+- **Flexible Storage** - Postgres, external API, GA4 Measurement Protocol, or fan-out multi-adapter
+- **Pixel Tracking** - Transparent GIF endpoint for email/no-JS contexts
 - **Astro-First** - Designed for Astro, works with any static site
-- **Flexible Storage** - Postgres or external API (Plausible, Umami)
 
 ## Installation
 
@@ -40,6 +42,15 @@ npm install @casoon/trackr
 <script>
   import { init } from "@casoon/trackr/client";
   init({ endpoint: "/api/track" });
+</script>
+```
+
+Or via CDN (no build step):
+
+```html
+<script src="https://unpkg.com/@casoon/trackr"></script>
+<script>
+  trackr.init({ siteId: "your-site-id", endpoint: "https://your-api.com/collect" });
 </script>
 ```
 
@@ -69,7 +80,7 @@ CREATE TABLE trackr_events (
   name TEXT,
   url TEXT NOT NULL,
   referrer_domain TEXT,
-  props JSONB DEFAULT  '{}'
+  props JSONB DEFAULT '{}'
 );
 ```
 
@@ -100,13 +111,65 @@ const storage = api({
 });
 ```
 
+### GA4 Measurement Protocol (optional, privacy proxy)
+
+Forwards events server-side — the GA script never loads in the user's browser.
+
+```typescript
+import { ga4 } from "@casoon/trackr/storage/ga4";
+const storage = ga4({
+  measurementId: "G-XXXXXXXXXX",
+  apiSecret: process.env.GA4_API_SECRET,
+  nonPersonalizedAds: true,   // default true
+  stripQueryParams: true,      // strip query strings from URLs
+  debug: false
+});
+```
+
+> **GDPR note:** GA4 forwarding sends anonymized session IDs. Enable only if you have a legal basis or user consent for GA4 data transfer to Google's US servers.
+
+### Multi (fan-out to multiple adapters)
+
+```typescript
+import { multi } from "@casoon/trackr/storage/multi";
+import { postgres } from "@casoon/trackr/storage/postgres";
+import { ga4 } from "@casoon/trackr/storage/ga4";
+
+const storage = multi(
+  postgres(process.env.DATABASE_URL),
+  ga4({ measurementId: "G-XXXXXXXXXX", apiSecret: process.env.GA4_API_SECRET })
+);
+```
+
+## Pixel Tracking
+
+For email open tracking or no-JS environments:
+
+```typescript
+import { createPixelHandler } from "@casoon/trackr/server/pixel";
+import { postgres } from "@casoon/trackr/storage/postgres";
+
+const pixelHandler = createPixelHandler({
+  storage: postgres(process.env.DATABASE_URL),
+  privacy: { anonymizeIp: true }
+});
+
+// Returns a transparent 1x1 GIF + records a pageview
+export const GET = async ({ request }) => pixelHandler(request);
+```
+
+```html
+<img src="https://your-api.com/pixel.gif?url=https://your-site.com/page" width="1" height="1" />
+```
+
 ## Privacy Features
 
-- **IP Anonymization** - Last octet removed before processing
+- **IP Anonymization** - Last octet removed before any processing
 - **PII Filtering** - Email, phone, tokens stripped from URLs
-- **No Cookies** - Session derived from anonymized IP + UA + date
-- **Bot Filtering** - Common bots excluded
-- **UTM Extraction** - Campaign params captured client-side
+- **No Cookies** - Session derived from anonymized IP + UA + date (daily rotating)
+- **Bot Filtering** - Common crawlers excluded
+- **UTM Extraction** - Campaign params captured client-side (prefix stripped: `utm_source` → `source`)
+- **OS Detection** - Server-side from User-Agent, not stored raw
 
 ## License
 
