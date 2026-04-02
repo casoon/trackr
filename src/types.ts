@@ -6,6 +6,7 @@ export interface TrackrEvent {
   country?: string;
   device?: "desktop" | "mobile" | "tablet";
   browser?: string;
+  os?: string;
   sessionId?: string;
   props?: Record<string, string | number | boolean>;
   ts: number;

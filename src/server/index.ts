@@ -56,6 +56,7 @@ export function createHandler(
 
       event.device = detectDevice(ua);
       event.browser = detectBrowser(ua);
+      event.os = detectOs(ua);
 
       await config.storage.save(event);
 
@@ -87,6 +88,16 @@ function detectBrowser(ua: string): string {
   if (/edg/i.test(ua)) return "Edge";
   if (/chrome/i.test(ua)) return "Chrome";
   if (/safari/i.test(ua)) return "Safari";
+  return "Other";
+}
+
+function detectOs(ua: string): string {
+  if (/android/i.test(ua)) return "Android";
+  if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
+  if (/windows/i.test(ua)) return "Windows";
+  if (/cros/i.test(ua)) return "ChromeOS";
+  if (/mac os x/i.test(ua)) return "macOS";
+  if (/linux/i.test(ua)) return "Linux";
   return "Other";
 }
 

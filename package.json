@@ -25,6 +25,18 @@
     "./storage/api": {
       "types": "./dist/storage/api.d.ts",
       "import": "./dist/storage/api.js"
+    },
+    "./storage/ga4": {
+      "types": "./dist/storage/ga4.d.ts",
+      "import": "./dist/storage/ga4.js"
+    },
+    "./storage/multi": {
+      "types": "./dist/storage/multi.d.ts",
+      "import": "./dist/storage/multi.js"
+    },
+    "./server/pixel": {
+      "types": "./dist/server/pixel.d.ts",
+      "import": "./dist/server/pixel.js"
     }
   },
   "files": [
