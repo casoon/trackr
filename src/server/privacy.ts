@@ -1,15 +1,36 @@
 import type { PrivacyConfig, TrackrEvent } from "../types.js";
 
-const PII_PARAMS = [
-  "email",
-  "mail",
-  "phone",
-  "name",
-  "token",
-  "key",
-  "password",
-  "secret",
+/** Default privacy config — all protections ON. */
+export const DEFAULT_PRIVACY_CONFIG: PrivacyConfig = {
+  anonymizeIp: true,
+  stripPii: true,
+};
+
+/** Merge caller config with safe defaults. */
+export function resolvePrivacyConfig(config?: PrivacyConfig): PrivacyConfig {
+  return { ...DEFAULT_PRIVACY_CONFIG, ...config };
+}
+
+/** Regex patterns that identify PII-bearing parameter/key names. */
+const PII_KEY_PATTERNS: RegExp[] = [
+  /^e?mail$/i,
+  /^phone$/i,
+  /^(first|last|full|user|display)[_-]?name$/i,
+  /^name$/i,
+  /^(token|key|password|passwd|pass|secret|api[_-]?key)$/i,
+  /^(address|street|city|zip|postal[_-]?code)$/i,
+  /^(user[_-]?id|uid|login|username|user)$/i,
+  /^(ssn|social|tax[_-]?id|national[_-]?id)$/i,
+  /^(credit[_-]?card|card[_-]?number|cvv|ccn?)$/i,
+  /^(ip[_-]?address)$/i,
+  /^(dob|date[_-]?of[_-]?birth|birthday)$/i,
 ];
+
+function isPiiKey(key: string): boolean {
+  return PII_KEY_PATTERNS.some((p) => p.test(key));
+}
+
+const EMAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
 export function anonymizeIp(ip: string): string {
   if (ip.includes(".")) {
@@ -21,28 +42,53 @@ export function anonymizeIp(ip: string): string {
 export function stripPii(url: string): string {
   try {
     const u = new URL(url, "http://localhost");
-    for (const p of PII_PARAMS) {
-      u.searchParams.delete(p);
+
+    // Remove query params whose key matches a PII pattern
+    const keysToDelete = [...u.searchParams.keys()].filter(isPiiKey);
+    for (const k of keysToDelete) {
+      u.searchParams.delete(k);
     }
-    return u.pathname + (u.search || "");
+
+    // Redact email patterns embedded in URL path segments
+    const pathname = u.pathname.replace(EMAIL_PATTERN, "[redacted]");
+
+    return pathname + (u.search || "");
   } catch {
     return url;
   }
 }
 
-export function createSessionId(ip: string, ua: string, date: string): string {
+export async function createSessionId(
+  ip: string,
+  ua: string,
+  date: string,
+): Promise<string> {
   const input = `${anonymizeIp(ip)}|${ua}|${date}`;
-  return simpleHash(input).slice(0, 16);
+  const data = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = new Uint8Array(hashBuffer);
+  return Array.from(hashArray)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 16);
 }
 
-function simpleHash(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+export function sanitizeProps(
+  props: Record<string, string | number | boolean>,
+): Record<string, string | number | boolean> {
+  const result: Record<string, string | number | boolean> = {};
+  for (const [key, value] of Object.entries(props)) {
+    if (isPiiKey(key)) {
+      result[key] = "[redacted]";
+      continue;
+    }
+    if (typeof value === "string") {
+      result[key] = value.replace(EMAIL_PATTERN, "[redacted]");
+    } else {
+      result[key] = value;
+    }
   }
-  return Math.abs(hash).toString(36);
+  return result;
 }
 
 export function applyPrivacy(
@@ -53,6 +99,10 @@ export function applyPrivacy(
 
   if (config.stripPii && result.url) {
     result.url = stripPii(result.url);
+  }
+
+  if (config.stripPii && result.props) {
+    result.props = sanitizeProps(result.props);
   }
 
   if (config.stripQueryParams && result.url) {

@@ -37,6 +37,14 @@
     "./server/pixel": {
       "types": "./dist/server/pixel.d.ts",
       "import": "./dist/server/pixel.js"
+    },
+    "./storage/webhook": {
+      "types": "./dist/storage/webhook.d.ts",
+      "import": "./dist/storage/webhook.js"
+    },
+    "./storage/batch": {
+      "types": "./dist/storage/batch.d.ts",
+      "import": "./dist/storage/batch.js"
     }
   },
   "files": [

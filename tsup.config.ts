@@ -11,6 +11,8 @@ export default defineConfig([
       "src/storage/api.ts",
       "src/storage/ga4.ts",
       "src/storage/multi.ts",
+      "src/storage/webhook.ts",
+      "src/storage/batch.ts",
       "src/server/pixel.ts",
     ],
     format: ["esm"],

@@ -22,6 +22,8 @@ Privacy-first, GDPR-native analytics for static sites. No cookies, no persistent
 - **OS Detection** - Server-side detection (Android, iOS, Windows, macOS, Linux, ChromeOS)
 - **Bot Filtering** - Common crawlers and headless browsers excluded
 - **Flexible Storage** - Postgres, external API, GA4 Measurement Protocol, or fan-out multi-adapter
+- **Webhook** - Forward events to any HTTP endpoint with HMAC-SHA256 signing and retry
+- **Batching** - Buffer events and flush in batches (size- or time-based) to reduce network calls
 - **Pixel Tracking** - Transparent GIF endpoint for email/no-JS contexts
 - **Astro-First** - Designed for Astro, works with any static site
 
@@ -128,6 +130,21 @@ const storage = ga4({
 
 > **GDPR note:** GA4 forwarding sends anonymized session IDs. Enable only if you have a legal basis or user consent for GA4 data transfer to Google's US servers.
 
+### Webhook
+
+Forward events to any HTTP endpoint. Supports HMAC-SHA256 payload signing and retry with exponential backoff.
+
+```typescript
+import { webhook } from "@casoon/trackr/storage/webhook";
+
+const storage = webhook({
+  url: "https://api.example.com/events",
+  secret: process.env.WEBHOOK_SECRET,        // signs payload → X-Trackr-Signature header
+  headers: { Authorization: "Bearer ..." },
+  retry: { attempts: 3, baseDelay: 500 },    // retries on 5xx with exponential backoff
+});
+```
+
 ### Multi (fan-out to multiple adapters)
 
 ```typescript
@@ -139,6 +156,23 @@ const storage = multi(
   postgres(process.env.DATABASE_URL),
   ga4({ measurementId: "G-XXXXXXXXXX", apiSecret: process.env.GA4_API_SECRET })
 );
+```
+
+### Batch (buffer & flush)
+
+Wraps any adapter. Buffers events in memory and flushes on size threshold or time interval. Uses `saveBatch()` when the wrapped adapter supports it (e.g. webhook), otherwise calls `save()` for each event.
+
+```typescript
+import { batch } from "@casoon/trackr/storage/batch";
+import { webhook } from "@casoon/trackr/storage/webhook";
+
+const storage = batch(
+  webhook({ url: "https://api.example.com/events", secret: "s3cret" }),
+  { maxSize: 20, maxWait: 10_000 }          // flush every 20 events or 10s
+);
+
+// Graceful shutdown
+process.on("SIGTERM", () => storage.flush());
 ```
 
 ## Pixel Tracking

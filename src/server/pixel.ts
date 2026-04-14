@@ -1,6 +1,6 @@
 import type { HandlerConfig, TrackrEvent } from "../types.js";
 import { isBot } from "./bot.js";
-import { applyPrivacy, createSessionId } from "./privacy.js";
+import { applyPrivacy, createSessionId, resolvePrivacyConfig } from "./privacy.js";
 
 /**
  * Creates a handler for pixel tracking — returns a 1×1 transparent GIF
@@ -67,9 +67,8 @@ export function createPixelHandler(
         ts: Date.now(),
       };
 
-      if (config.privacy) {
-        event = applyPrivacy(event, config.privacy);
-      }
+      const privacy = resolvePrivacyConfig(config.privacy);
+      event = applyPrivacy(event, privacy);
 
       const ip =
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -78,8 +77,8 @@ export function createPixelHandler(
       const ua = request.headers.get("user-agent") || "";
       const today = new Date().toISOString().split("T")[0];
 
-      if (config.privacy?.anonymizeIp !== false) {
-        event.sessionId = createSessionId(ip, ua, today);
+      if (privacy.anonymizeIp) {
+        event.sessionId = await createSessionId(ip, ua, today);
       }
 
       await config.storage.save(event);

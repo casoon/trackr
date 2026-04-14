@@ -1,6 +1,6 @@
 import type { HandlerConfig, TrackrEvent } from "../types.js";
 import { isBot } from "./bot.js";
-import { applyPrivacy, createSessionId } from "./privacy.js";
+import { applyPrivacy, createSessionId, resolvePrivacyConfig } from "./privacy.js";
 
 interface RawEvent {
   type: string;
@@ -39,9 +39,8 @@ export function createHandler(
         ts: body.ts,
       };
 
-      if (config.privacy) {
-        event = applyPrivacy(event, config.privacy);
-      }
+      const privacy = resolvePrivacyConfig(config.privacy);
+      event = applyPrivacy(event, privacy);
 
       const ip =
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -50,8 +49,8 @@ export function createHandler(
       const ua = request.headers.get("user-agent") || "";
       const today = new Date().toISOString().split("T")[0];
 
-      if (config.privacy?.anonymizeIp !== false) {
-        event.sessionId = createSessionId(ip, ua, today);
+      if (privacy.anonymizeIp) {
+        event.sessionId = await createSessionId(ip, ua, today);
       }
 
       event.device = detectDevice(ua);
@@ -102,4 +101,10 @@ function detectOs(ua: string): string {
 }
 
 export { isBot } from "./bot.js";
-export { anonymizeIp, applyPrivacy, stripPii } from "./privacy.js";
+export {
+  anonymizeIp,
+  applyPrivacy,
+  resolvePrivacyConfig,
+  sanitizeProps,
+  stripPii,
+} from "./privacy.js";

@@ -19,6 +19,7 @@ export interface TrackrConfig {
 
 export interface StorageAdapter {
   save(event: TrackrEvent): Promise<void>;
+  saveBatch?(events: TrackrEvent[]): Promise<void>;
   query?(options: QueryOptions): Promise<TrackrEvent[]>;
 }
 
