@@ -146,7 +146,10 @@ describe("resolvePrivacyConfig", () => {
   });
 
   it("preserves explicit values", () => {
-    const result = resolvePrivacyConfig({ anonymizeIp: false, stripPii: false });
+    const result = resolvePrivacyConfig({
+      anonymizeIp: false,
+      stripPii: false,
+    });
     expect(result.anonymizeIp).toBe(false);
     expect(result.stripPii).toBe(false);
   });
@@ -154,7 +157,11 @@ describe("resolvePrivacyConfig", () => {
 
 describe("createSessionId", () => {
   it("returns a non-empty string", async () => {
-    const id = await createSessionId("192.168.1.0", "Mozilla/5.0", "2026-04-03");
+    const id = await createSessionId(
+      "192.168.1.0",
+      "Mozilla/5.0",
+      "2026-04-03",
+    );
     expect(typeof id).toBe("string");
     expect(id.length).toBeGreaterThan(0);
   });

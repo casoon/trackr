@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { multi } from "../src/storage/multi.js";
 import type { StorageAdapter, TrackrEvent } from "../src/types.js";
 

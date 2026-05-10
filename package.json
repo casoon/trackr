@@ -49,6 +49,7 @@
   },
   "files": [
     "dist",
+    "migrations",
     "script.js",
     "LICENSE",
     "README.md"

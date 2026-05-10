@@ -57,9 +57,7 @@ describe("webhook adapter", () => {
     const call = vi.mocked(fetch).mock.calls[0];
     const headers = call[1]?.headers as Record<string, string>;
     const body = call[1]?.body as string;
-    const expectedSig = createHmac("sha256", secret)
-      .update(body)
-      .digest("hex");
+    const expectedSig = createHmac("sha256", secret).update(body).digest("hex");
 
     expect(headers["X-Trackr-Signature"]).toBe(expectedSig);
   });
@@ -81,7 +79,9 @@ describe("webhook adapter", () => {
     await adapter.save(mockEvent);
 
     const call = vi.mocked(fetch).mock.calls[0];
-    expect(call[1]?.body).toBe(JSON.stringify({ page: "/test", time: 1000000 }));
+    expect(call[1]?.body).toBe(
+      JSON.stringify({ page: "/test", time: 1000000 }),
+    );
   });
 
   it("throws on non-OK response without retry", async () => {
@@ -92,7 +92,9 @@ describe("webhook adapter", () => {
     } as Response);
 
     const adapter = webhook({ url: WEBHOOK_URL });
-    await expect(adapter.save(mockEvent)).rejects.toThrow("Webhook failed: 400 Bad Request");
+    await expect(adapter.save(mockEvent)).rejects.toThrow(
+      "Webhook failed: 400 Bad Request",
+    );
   });
 
   it("retries on 5xx errors", async () => {
@@ -102,7 +104,11 @@ describe("webhook adapter", () => {
         status: 502,
         statusText: "Bad Gateway",
       } as Response)
-      .mockResolvedValueOnce({ ok: true, status: 200, statusText: "OK" } as Response);
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+      } as Response);
 
     const adapter = webhook({
       url: WEBHOOK_URL,
@@ -128,7 +134,9 @@ describe("webhook adapter", () => {
       retry: { attempts: 1, baseDelay: 1 },
     });
 
-    await expect(adapter.save(mockEvent)).rejects.toThrow("Webhook failed: 500");
+    await expect(adapter.save(mockEvent)).rejects.toThrow(
+      "Webhook failed: 500",
+    );
   });
 
   it("does not retry on 4xx errors", async () => {
@@ -143,7 +151,9 @@ describe("webhook adapter", () => {
       retry: { attempts: 3, baseDelay: 1 },
     });
 
-    await expect(adapter.save(mockEvent)).rejects.toThrow("Webhook failed: 422");
+    await expect(adapter.save(mockEvent)).rejects.toThrow(
+      "Webhook failed: 422",
+    );
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
@@ -155,7 +165,7 @@ describe("webhook adapter", () => {
       ];
 
       const adapter = webhook({ url: WEBHOOK_URL });
-      await adapter.saveBatch!(events);
+      await adapter.saveBatch?.(events);
 
       expect(fetch).toHaveBeenCalledTimes(1);
       const call = vi.mocked(fetch).mock.calls[0];
@@ -167,7 +177,7 @@ describe("webhook adapter", () => {
       const events: TrackrEvent[] = [mockEvent, mockEvent];
 
       const adapter = webhook({ url: WEBHOOK_URL, secret });
-      await adapter.saveBatch!(events);
+      await adapter.saveBatch?.(events);
 
       const call = vi.mocked(fetch).mock.calls[0];
       const body = call[1]?.body as string;
@@ -182,7 +192,10 @@ describe("webhook adapter", () => {
         transform: (e) => ({ p: e.url }),
       });
 
-      await adapter.saveBatch!([mockEvent, { type: "event", url: "/other", ts: 2, name: "x" }]);
+      await adapter.saveBatch?.([
+        mockEvent,
+        { type: "event", url: "/other", ts: 2, name: "x" },
+      ]);
 
       const call = vi.mocked(fetch).mock.calls[0];
       expect(call[1]?.body).toBe(

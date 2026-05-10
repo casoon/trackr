@@ -135,10 +135,9 @@ function buildPayload(event: TrackrEvent, config: Ga4Config): Ga4Payload {
   const clientId = event.sessionId ?? `anon_${event.ts}`;
   const nonPersonalizedAds = config.nonPersonalizedAds !== false;
 
-  const pageUrl =
-    config.stripQueryParams?.length
-      ? stripParams(event.url, config.stripQueryParams)
-      : event.url;
+  const pageUrl = config.stripQueryParams?.length
+    ? stripParams(event.url, config.stripQueryParams)
+    : event.url;
 
   const baseParams: Record<string, string | number | boolean> = {
     session_id: clientId,
@@ -168,8 +167,7 @@ function buildPayload(event: TrackrEvent, config: Ga4Config): Ga4Payload {
       for (const [k, v] of Object.entries(event.props)) {
         // GA4 allows max 25 custom params, key max 40 chars, value max 100 chars
         const safeKey = k.replace(/[^a-zA-Z0-9_]/g, "_").slice(0, 40);
-        const safeVal =
-          typeof v === "string" ? v.slice(0, 100) : v;
+        const safeVal = typeof v === "string" ? v.slice(0, 100) : v;
         props[safeKey] = safeVal;
       }
     }

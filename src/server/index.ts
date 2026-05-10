@@ -1,6 +1,10 @@
 import type { HandlerConfig, TrackrEvent } from "../types.js";
 import { isBot } from "./bot.js";
-import { applyPrivacy, createSessionId, resolvePrivacyConfig } from "./privacy.js";
+import {
+  applyPrivacy,
+  createSessionId,
+  resolvePrivacyConfig,
+} from "./privacy.js";
 
 interface RawEvent {
   type: string;
@@ -8,6 +12,7 @@ interface RawEvent {
   ts: number;
   name?: string;
   referrer?: string;
+  utm?: Record<string, string>;
   props?: Record<string, string | number | boolean>;
 }
 
@@ -35,6 +40,7 @@ export function createHandler(
         name: body.name,
         url: body.url,
         referrer: body.referrer,
+        utm: body.utm,
         props: body.props,
         ts: body.ts,
       };

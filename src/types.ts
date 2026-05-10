@@ -8,6 +8,7 @@ export interface TrackrEvent {
   browser?: string;
   os?: string;
   sessionId?: string;
+  utm?: Record<string, string>;
   props?: Record<string, string | number | boolean>;
   ts: number;
 }

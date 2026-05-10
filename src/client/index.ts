@@ -22,9 +22,9 @@ export function init(options: TrackrConfig): void {
 function patchHistoryMethod(method: "pushState" | "replaceState"): void {
   const original = history[method].bind(history);
   // biome-ignore lint/suspicious/noExplicitAny: patching native history API
-  (history[method] as any) = function (
+  (history[method] as any) = (
     ...args: Parameters<typeof history.pushState>
-  ) {
+  ) => {
     original(...args);
     trackPageview();
   };

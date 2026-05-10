@@ -70,13 +70,25 @@ export function webhook(config: WebhookConfig): StorageAdapter {
   return {
     async save(event: TrackrEvent): Promise<void> {
       const body = JSON.stringify(transformOne(event));
-      await sendWithRetry(config.url, body, buildHeaders(body), maxAttempts, baseDelay);
+      await sendWithRetry(
+        config.url,
+        body,
+        buildHeaders(body),
+        maxAttempts,
+        baseDelay,
+      );
     },
 
     async saveBatch(events: TrackrEvent[]): Promise<void> {
       const payload = events.map(transformOne);
       const body = JSON.stringify(payload);
-      await sendWithRetry(config.url, body, buildHeaders(body), maxAttempts, baseDelay);
+      await sendWithRetry(
+        config.url,
+        body,
+        buildHeaders(body),
+        maxAttempts,
+        baseDelay,
+      );
     },
   };
 }

@@ -29,8 +29,8 @@ export function postgres(
     async save(event: TrackrEvent): Promise<void> {
       const db = await getClient();
       await db.query(
-        `INSERT INTO trackr_events (type, name, url, referrer_domain, country, device, browser, session_id, props, ts)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, to_timestamp($10 / 1000.0))`,
+        `INSERT INTO trackr_events (type, name, url, referrer_domain, country, device, browser, os, session_id, utm, props, ts)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, to_timestamp($12 / 1000.0))`,
         [
           event.type,
           event.name || null,
@@ -39,7 +39,9 @@ export function postgres(
           event.country || null,
           event.device || null,
           event.browser || null,
+          event.os || null,
           event.sessionId || null,
+          event.utm ? JSON.stringify(event.utm) : null,
           JSON.stringify(event.props || {}),
           event.ts,
         ],

@@ -74,17 +74,13 @@ export const POST = async ({ request }) => handler(request);
 
 ### 3. Set up the database
 
-```sql
-CREATE TABLE trackr_events (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  type TEXT NOT NULL,
-  name TEXT,
-  url TEXT NOT NULL,
-  referrer_domain TEXT,
-  props JSONB DEFAULT '{}'
-);
+Run the bundled migration against your Postgres instance:
+
+```bash
+psql "$DATABASE_URL" -f node_modules/@casoon/trackr/migrations/001_create_trackr_events.sql
 ```
+
+This creates the `trackr_events` table with all required columns and indexes. See [Production Setup](#production-setup) for details.
 
 ## Custom Events
 
@@ -204,6 +200,90 @@ export const GET = async ({ request }) => pixelHandler(request);
 - **Bot Filtering** - Common crawlers excluded
 - **UTM Extraction** - Campaign params captured client-side (prefix stripped: `utm_source` → `source`)
 - **OS Detection** - Server-side from User-Agent, not stored raw
+
+## Production Setup
+
+### Database migration
+
+The migration file is included in the package at `migrations/001_create_trackr_events.sql`. It creates the `trackr_events` table and all recommended indexes:
+
+```sql
+CREATE TABLE IF NOT EXISTS trackr_events (
+  id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  ts          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  type        TEXT        NOT NULL CHECK (type IN ('pageview', 'event')),
+  name        TEXT,
+  url         TEXT        NOT NULL,
+  referrer_domain TEXT,
+  country     TEXT,
+  device      TEXT        CHECK (device IN ('desktop', 'mobile', 'tablet')),
+  browser     TEXT,
+  os          TEXT,
+  session_id  TEXT,
+  utm         JSONB       DEFAULT NULL,
+  props       JSONB       DEFAULT '{}'
+);
+```
+
+Apply it with any Postgres client:
+
+```bash
+# psql
+psql "$DATABASE_URL" -f node_modules/@casoon/trackr/migrations/001_create_trackr_events.sql
+
+# or pipe it directly
+node -e "require('fs').readFileSync('node_modules/@casoon/trackr/migrations/001_create_trackr_events.sql','utf8')" \
+  | psql "$DATABASE_URL"
+```
+
+### Recommended indexes
+
+The migration already includes these indexes:
+
+| Index | Purpose |
+|-------|---------|
+| `idx_trackr_events_ts` | Time-range queries (most common) |
+| `idx_trackr_events_type` | Filter pageviews vs. custom events |
+| `idx_trackr_events_url` | Per-page analytics |
+| `idx_trackr_events_utm` | GIN index on `utm` JSONB for campaign attribution |
+| `idx_trackr_events_props` | GIN index on `props` JSONB for custom event filtering |
+
+### Data retention
+
+trackr stores no PII — session IDs rotate daily and IPs are never persisted. For compliance or storage reasons you may still want to schedule a periodic cleanup:
+
+```sql
+-- Delete events older than 90 days (run via pg_cron or a scheduled job)
+DELETE FROM trackr_events WHERE ts < NOW() - INTERVAL '90 days';
+```
+
+### Example analytics queries
+
+```sql
+-- Pageviews per day (last 30 days)
+SELECT DATE_TRUNC('day', ts) AS day, COUNT(*) AS views
+FROM trackr_events
+WHERE type = 'pageview' AND ts > NOW() - INTERVAL '30 days'
+GROUP BY 1 ORDER BY 1;
+
+-- Top pages
+SELECT url, COUNT(*) AS views
+FROM trackr_events
+WHERE type = 'pageview'
+GROUP BY url ORDER BY views DESC LIMIT 20;
+
+-- UTM source breakdown
+SELECT utm->>'source' AS source, COUNT(*) AS sessions
+FROM trackr_events
+WHERE utm IS NOT NULL
+GROUP BY 1 ORDER BY 2 DESC;
+
+-- Custom event counts
+SELECT name, COUNT(*) AS fires
+FROM trackr_events
+WHERE type = 'event'
+GROUP BY name ORDER BY fires DESC;
+```
 
 ## License
 
