@@ -2,6 +2,8 @@
 
 Privacy-first, GDPR-native analytics for static sites. No cookies, no persistent IDs, self-hosted.
 
+**Website:** [trackr.casoon.de](https://trackr.casoon.de/en/)
+
 ## Live Demo
 
 - [Homepage (Pageview)](https://trackr-demo.casoon.dev/)
