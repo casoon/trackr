@@ -20,6 +20,7 @@ export default defineConfig({
         { label: 'Website', href: 'https://trackr.casoon.de' },
         { label: 'Dashboard', href: 'https://trackr-dashboard.casoon.dev' },
       ],
+      mdxComponents: './src/mdx-components.ts',
       docsGroups: {
         'getting-started': 'Getting started',
         guides: 'Guides',

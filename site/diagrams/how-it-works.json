@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "type": "flow",
+  "title": "How trackr works",
+  "description": "The browser script on your site sends pageviews and events to an endpoint on your own server. The handler there drops bots and personal data and passes the event to the storage you configured: Postgres, a webhook, an HTTP API or GA4. A tracking pixel takes the same path without JavaScript.",
+  "source": "src/client/index.ts, src/server/index.ts, src/server/pixel.ts, src/storage/",
+  "width": 1100,
+  "height": 380,
+  "flow": {
+    "nodes": [
+      { "id": "script", "label": "Browser script", "sublabel": "on your website, no cookies", "kind": "start" },
+      { "id": "pixel", "label": "Tracking pixel", "sublabel": "email, no JavaScript", "kind": "start" },
+      { "id": "handler", "label": "Handler on your server", "sublabel": "removes bots and personal data" },
+      { "id": "storage", "label": "Storage you choose", "sublabel": "one, several, or batched" },
+      { "id": "postgres", "label": "Postgres", "kind": "end" },
+      { "id": "webhook", "label": "Webhook", "kind": "end" },
+      { "id": "api", "label": "HTTP API", "kind": "end" },
+      { "id": "ga4", "label": "GA4", "sublabel": "sent from your server", "kind": "external" }
+    ],
+    "edges": [
+      { "from": "script", "to": "handler", "label": "pageviews, events" },
+      { "from": "pixel", "to": "handler", "label": "pageview", "dash": "dashed" },
+      { "from": "handler", "to": "storage" },
+      { "from": "storage", "to": "postgres" },
+      { "from": "storage", "to": "webhook" },
+      { "from": "storage", "to": "api" },
+      { "from": "storage", "to": "ga4" }
+    ],
+    "mainPath": ["script", "handler", "storage", "postgres"],
+    "orientation": "landscape"
+  }
+}

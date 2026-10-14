@@ -10,6 +10,29 @@ events with `sendBeacon`, and a server handler (`createHandler()`) that filters 
 personal data, adds a daily session ID and device details, and passes the event to a storage
 adapter.
 
+## How it works
+
+<Diagram name="how-it-works" />
+
+1. **Browser script.** `init()` sends a pageview on load and on every `pushState`,
+   `replaceState`, `popstate` and `hashchange`; `track()` sends custom events. Events go out
+   with `sendBeacon`, with `fetch` and `keepalive` as fallback. The script sets no cookies
+   and uses neither `localStorage` nor `sessionStorage`.
+2. **Handler.** `createHandler()` answers anything but `POST` with `405`. With `botFilter`, it
+   answers bots with `200 OK` and stores nothing. It checks `type`, `url` and `ts`, then
+   applies the privacy options (`stripPii`, `stripQueryParams`), derives the daily session ID
+   from a hash of anonymized IP, User-Agent and date, and detects device, browser and OS.
+   The IP and the full User-Agent are not part of the stored event. Details:
+   [Privacy](guides/privacy/).
+3. **Storage.** The event goes to `storage.save()`: Postgres, an HTTP API, an HMAC-signed
+   webhook, or GA4 via the Measurement Protocol. `multi()` passes it to several adapters,
+   `batch()` buffers events and flushes by size or time. Details:
+   [Storage adapters](guides/storage/).
+
+The tracking pixel (`createPixelHandler()`) applies the same bot filter, privacy options and
+session ID for pages and emails without JavaScript, but detects no device, browser or OS. See
+[Tracking pixel](guides/pixel/).
+
 ## What it covers
 
 - Pageviews, including navigation in single-page apps, and custom events with properties.
