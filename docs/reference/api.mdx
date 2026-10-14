@@ -1,0 +1,171 @@
+---
+title: API
+description: Public functions and configuration types of @casoon/trackr. The type declarations shipped in the package are the authoritative source.
+order: 1
+---
+
+## Client
+
+<ApiEntry
+  kind="function"
+  name="init"
+  since="since 0.1"
+  lang="ts"
+  signature={`import { init } from "@casoon/trackr/client";
+
+function init(options: TrackrConfig): void;
+
+interface TrackrConfig {
+  endpoint: string;
+  debug?: boolean;
+}`}
+  params={[
+    { name: 'endpoint', type: 'string', desc: 'URL the events are posted to, usually a route on the same site.' },
+    { name: 'debug', type: 'boolean', desc: 'Log every sent event to the console.' },
+  ]}
+>
+  Sends a pageview and, from 0.2, a pageview after every `pushState`, `replaceState`,
+  `popstate` and `hashchange`. Call it once per page load.
+</ApiEntry>
+
+<ApiEntry
+  kind="function"
+  name="track"
+  since="since 0.1"
+  lang="ts"
+  signature={`import { track } from "@casoon/trackr/client";
+
+function track(name: string, props?: Record<string, string | number | boolean>): void;`}
+>
+  Sends a custom event for the current path. Before `init()` it only logs a warning.
+</ApiEntry>
+
+## Server
+
+<ApiEntry
+  kind="function"
+  name="createHandler"
+  since="since 0.1"
+  lang="ts"
+  signature={`import { createHandler } from "@casoon/trackr/server";
+
+function createHandler(config: HandlerConfig): (request: Request) => Promise<Response>;
+
+interface HandlerConfig {
+  storage: StorageAdapter;
+  privacy?: PrivacyConfig;
+  botFilter?: boolean;
+}
+
+interface PrivacyConfig {
+  anonymizeIp?: boolean;     // default true
+  stripPii?: boolean;        // default true
+  stripQueryParams?: string[];
+}`}
+  params={[
+    { name: 'storage', type: 'StorageAdapter', desc: 'Receives every accepted event.' },
+    { name: 'privacy', type: 'PrivacyConfig', desc: 'Merged with the defaults; see the Privacy guide.' },
+    { name: 'botFilter', type: 'boolean', desc: 'Drop requests that look like bots. Off unless set.' },
+  ]}
+>
+  Accepts `POST` with a JSON event. Status codes are listed in the
+  [Quickstart](../../getting-started/quickstart/).
+</ApiEntry>
+
+<ApiEntry
+  kind="function"
+  name="createPixelHandler"
+  since="since 0.2"
+  lang="ts"
+  signature={`import { createPixelHandler } from "@casoon/trackr/server/pixel";
+
+function createPixelHandler(config: HandlerConfig): (request: Request) => Promise<Response>;`}
+>
+  Records a pageview from the `url` and `ref` query parameters and returns a transparent GIF.
+  See [Tracking pixel](../../guides/pixel/).
+</ApiEntry>
+
+`@casoon/trackr/server` also exports the building blocks the handler uses: `isBot(request)`,
+`anonymizeIp(ip)`, `stripPii(url)`, `sanitizeProps(props)`, `applyPrivacy(event, config)` and
+`resolvePrivacyConfig(config)`.
+
+## Storage
+
+<ApiEntry
+  kind="function"
+  name="postgres"
+  since="since 0.1"
+  lang="ts"
+  signature={`postgres(connectionStringOrClient: string | { query(text: string, values?: unknown[]): Promise<{ rows: unknown[] }> }): StorageAdapter`}
+/>
+
+<ApiEntry
+  kind="function"
+  name="api"
+  since="since 0.1"
+  lang="ts"
+  signature={`api(config: { url: string; headers?: Record<string, string>; transform?: (event: TrackrEvent) => unknown }): StorageAdapter`}
+/>
+
+<ApiEntry
+  kind="function"
+  name="webhook"
+  since="since 0.2"
+  lang="ts"
+  signature={`webhook(config: WebhookConfig): StorageAdapter
+
+interface WebhookConfig {
+  url: string;
+  headers?: Record<string, string>;
+  secret?: string;
+  transform?: (event: TrackrEvent) => unknown;
+  retry?: { attempts?: number; baseDelay?: number };
+}`}
+/>
+
+<ApiEntry
+  kind="function"
+  name="ga4"
+  since="since 0.2"
+  lang="ts"
+  signature={`ga4(config: Ga4Config): StorageAdapter
+
+interface Ga4Config {
+  measurementId: string;
+  apiSecret: string;
+  debug?: boolean;               // default false
+  nonPersonalizedAds?: boolean;  // default true
+  stripQueryParams?: string[];
+}`}
+/>
+
+<ApiEntry
+  kind="function"
+  name="multi"
+  since="since 0.2"
+  lang="ts"
+  signature={`multi(...adapters: StorageAdapter[]): StorageAdapter`}
+/>
+
+<ApiEntry
+  kind="function"
+  name="batch"
+  since="since 0.2"
+  lang="ts"
+  signature={`batch(adapter: StorageAdapter, options?: BatchOptions): BatchedAdapter
+
+interface BatchOptions {
+  maxSize?: number;  // default 10
+  maxWait?: number;  // ms, default 5000
+  onError?: (error: unknown, events: TrackrEvent[]) => void;
+}
+
+interface BatchedAdapter extends StorageAdapter {
+  flush(): Promise<void>;
+  readonly pending: number;
+}`}
+/>
+
+Behaviour and examples for every adapter: [Storage adapters](../../guides/storage/). The
+full type declarations are in the package (`dist/**/*.d.ts`) and on
+[npm](https://www.npmjs.com/package/@casoon/trackr).

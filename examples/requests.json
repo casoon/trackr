@@ -1,0 +1,61 @@
+{
+  "pageview": {
+    "headers": {
+      "content-type": "application/json",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+      "accept-language": "de-DE,de;q=0.9",
+      "x-forwarded-for": "203.0.113.42"
+    },
+    "body": {
+      "type": "pageview",
+      "url": "/pricing?utm_source=newsletter&utm_medium=email&utm_campaign=october&email=jane@example.com",
+      "referrer": "news.ycombinator.com",
+      "utm": {
+        "source": "newsletter",
+        "medium": "email",
+        "campaign": "october"
+      },
+      "ts": 1791961200000
+    }
+  },
+  "event": {
+    "headers": {
+      "content-type": "application/json",
+      "user-agent": "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36",
+      "accept-language": "en-US,en;q=0.9",
+      "x-forwarded-for": "198.51.100.7"
+    },
+    "body": {
+      "type": "event",
+      "name": "signup_click",
+      "url": "/users/jane@example.com/settings",
+      "props": {
+        "plan": "pro",
+        "email": "jane@example.com",
+        "note": "reply to jane@example.com",
+        "seats": 3
+      },
+      "ts": 1791961260000
+    }
+  },
+  "bot": {
+    "headers": {
+      "content-type": "application/json",
+      "user-agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "x-forwarded-for": "66.249.66.1"
+    },
+    "body": {
+      "type": "pageview",
+      "url": "/pricing",
+      "ts": 1791961320000
+    }
+  },
+  "pixel": {
+    "url": "https://example.com/pixel.gif?url=/newsletter/october&ref=mail",
+    "headers": {
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "accept-language": "en-US,en;q=0.9",
+      "x-forwarded-for": "192.0.2.15"
+    }
+  }
+}

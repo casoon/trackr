@@ -1,0 +1,20 @@
+{
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "no-store, no-cache, must-revalidate",
+      "content-type": "image/gif",
+      "pragma": "no-cache"
+    },
+    "bytes": 43
+  },
+  "stored": [
+    {
+      "type": "pageview",
+      "url": "/newsletter/october",
+      "referrer": "mail",
+      "ts": 1791961200000,
+      "sessionId": "6217de67bbf5a139"
+    }
+  ]
+}

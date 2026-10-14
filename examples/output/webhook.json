@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://api.example.com/events",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Trackr-Signature": "e3630831a1a5de4e9d97478cfb44572aed4f469a8555f4c0dcbadf475ea057cb"
+    },
+    "body": {
+      "type": "pageview",
+      "url": "/pricing?utm_source=newsletter&utm_medium=email&utm_campaign=october",
+      "referrer": "news.ycombinator.com",
+      "utm": {
+        "source": "newsletter",
+        "medium": "email",
+        "campaign": "october"
+      },
+      "ts": 1791961200000,
+      "sessionId": "c6c4216a1163582e",
+      "device": "desktop",
+      "browser": "Safari",
+      "os": "macOS"
+    }
+  }
+]

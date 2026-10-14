@@ -1,0 +1,19 @@
+[
+  {
+    "text": "INSERT INTO trackr_events (type, name, url, referrer_domain, country, device, browser, os, session_id, utm, props, ts) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, to_timestamp($12 / 1000.0))",
+    "values": [
+      "pageview",
+      null,
+      "/pricing?utm_source=newsletter&utm_medium=email&utm_campaign=october",
+      "news.ycombinator.com",
+      null,
+      "desktop",
+      "Safari",
+      "macOS",
+      "c6c4216a1163582e",
+      "{\"source\":\"newsletter\",\"medium\":\"email\",\"campaign\":\"october\"}",
+      "{}",
+      1791961200000
+    ]
+  }
+]

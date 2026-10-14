@@ -1,0 +1,24 @@
+{
+  "response": {
+    "status": 200,
+    "body": "OK"
+  },
+  "stored": [
+    {
+      "type": "event",
+      "name": "signup_click",
+      "url": "/users/[redacted]/settings",
+      "props": {
+        "plan": "pro",
+        "email": "[redacted]",
+        "note": "reply to [redacted]",
+        "seats": 3
+      },
+      "ts": 1791961260000,
+      "sessionId": "6a903f454a1bbf75",
+      "device": "mobile",
+      "browser": "Chrome",
+      "os": "Android"
+    }
+  ]
+}

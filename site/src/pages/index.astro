@@ -1,0 +1,119 @@
+---
+import {
+  Badge,
+  Badges,
+  BuildOutput,
+  Callout,
+  CodeBlock,
+  Facts,
+  Features,
+  Hero,
+  Install,
+  Quickstart,
+  Terminal,
+} from '@casoon/pages-theme/components';
+import Base from '@casoon/pages-theme/layouts/Base.astro';
+import { clientSize, output } from '../showcase';
+
+const client = `<script>
+  import { init } from "@casoon/trackr/client";
+  init({ endpoint: "/api/track" });
+</script>`;
+
+const endpoint = `import { createHandler } from "@casoon/trackr/server";
+import { postgres } from "@casoon/trackr/storage/postgres";
+
+// Runs on request: needs an adapter and prerender disabled for this route.
+const handler = createHandler({
+  storage: postgres(import.meta.env.DATABASE_URL),
+  privacy: { anonymizeIp: true, stripPii: true },
+  botFilter: true,
+});
+
+export const POST = async ({ request }) => handler(request);`;
+
+const migration = `psql "$DATABASE_URL" -f migrations/001_create_trackr_events.sql`;
+---
+
+<Base>
+  <Hero
+    title="Analytics without cookies, on your own server."
+    lead="trackr is a small browser script and a server handler for static sites. The handler drops personal data from URLs and event properties, derives a session ID that changes every day, and hands the event to storage you choose: Postgres, a webhook, an external API or GA4 forwarded from the server."
+  >
+    <Install
+      commands={[
+        { label: 'pnpm', command: 'pnpm add @casoon/trackr' },
+        { label: 'npm', command: 'npm install @casoon/trackr' },
+      ]}
+    />
+    <Badges>
+      <Badge>LGPL-3.0-or-later</Badge>
+      <Badge>npm 0.3.0</Badge>
+      <Badge>Node 22+</Badge>
+      <Badge>ESM</Badge>
+    </Badges>
+    <Terminal slot="output" title="stored pageview · examples/output/pageview.json" dots
+      ><Fragment set:html={output('pageview')} /></Terminal
+    >
+  </Hero>
+
+  <Facts
+    items={[
+      { value: `${clientSize.gzip} B`, label: `gzip size of the browser script (${clientSize.file})` },
+      { value: '0', label: 'required runtime dependencies; pg is optional' },
+      { value: '6', label: 'storage adapters and wrappers' },
+      { value: '73', label: 'tests in the Vitest suite' },
+    ]}
+  />
+
+  <Features
+    items={[
+      {
+        title: 'No cookies, no stored IP',
+        body: 'The browser script sets no cookies and uses no localStorage. The session ID is the first 16 hex characters of a SHA-256 hash over the anonymized IP, the User-Agent and the date, so it changes every day. The IP itself is not part of the stored event.',
+      },
+      {
+        title: 'Personal data removed before storage',
+        body: 'Query parameters and properties with names like email, phone, token or user_id are dropped or replaced by [redacted]; email addresses in URL paths and string values are redacted. Both protections are on by default.',
+      },
+      {
+        title: 'A small script for static sites and SPAs',
+        body: 'init() records a pageview, extracts UTM parameters and follows pushState, replaceState, popstate and hashchange. Events go out with sendBeacon, with fetch keepalive as fallback. Import it as ESM or load the bundled script.js.',
+      },
+      {
+        title: 'Storage you choose',
+        body: 'Postgres with a migration in the repository, an HMAC-signed webhook with retry, any HTTP API, or GA4 via the Measurement Protocol from your server. multi() fans out to several adapters, batch() buffers and flushes by size or time.',
+      },
+      {
+        title: 'Works without JavaScript',
+        body: 'createPixelHandler() answers with a transparent GIF and records a pageview, for email opens and pages that run no script.',
+      },
+    ]}
+  />
+
+  <BuildOutput
+    caption="A custom event whose path and properties contain an email address, as createHandler() stores it. Captured from the package by examples/capture.mjs."
+    file="examples/output/event.json"
+  >
+    <Terminal><Fragment set:html={output('event')} /></Terminal>
+  </BuildOutput>
+
+  <Callout title="Website and dashboard">
+    Product page: <a href="https://trackr.casoon.de">trackr.casoon.de</a>. Dashboard:
+    <a href="https://trackr-dashboard.casoon.dev">trackr-dashboard.casoon.dev</a>. This site itself
+    runs no analytics.
+  </Callout>
+
+  <Quickstart
+    lead="Three steps from install to the first stored pageview. The full walkthrough lives in the documentation."
+    steps={[
+      'Load the client once in your shared layout and point it at your endpoint.',
+      'Add a POST route that runs <code>createHandler()</code> with a storage adapter.',
+      'Create the <code>trackr_events</code> table with the migration from the repository.',
+    ]}
+  >
+    <CodeBlock code={client} lang="astro" title="src/components/Analytics.astro" label="Client" />
+    <CodeBlock code={endpoint} lang="ts" title="src/pages/api/track.ts" label="Endpoint" />
+    <CodeBlock code={migration} lang="shell" title="Terminal" label="Database" />
+  </Quickstart>
+</Base>

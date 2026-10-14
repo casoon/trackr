@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://www.google-analytics.com/mp/collect?measurement_id=G-XXXXXXXXXX&api_secret=example-secret",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "client_id": "c6c4216a1163582e",
+      "non_personalized_ads": true,
+      "events": [
+        {
+          "name": "page_view",
+          "params": {
+            "session_id": "c6c4216a1163582e",
+            "engagement_time_msec": 1,
+            "device_category": "desktop",
+            "browser": "Safari",
+            "page_location": "/pricing?utm_source=newsletter&utm_medium=email&utm_campaign=october",
+            "page_referrer": "news.ycombinator.com"
+          }
+        }
+      ]
+    }
+  }
+]
