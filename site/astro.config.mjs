@@ -11,6 +11,8 @@ export default defineConfig({
       name: 'trackr',
       description:
         'Privacy-first analytics for static sites: a small browser script, a server handler that anonymizes before it stores, and storage adapters for Postgres, webhooks, GA4 and more.',
+      tagline: 'Privacy-first analytics for static sites',
+      website: 'https://trackr.casoon.de',
       repo: 'casoon/trackr',
       branch: 'master',
       version: '0.3.0',
