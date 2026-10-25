@@ -12,6 +12,7 @@ import {
   Terminal,
 } from '@casoon/pages-theme/components';
 import Base from '@casoon/pages-theme/layouts/Base.astro';
+import config from 'virtual:casoon-pages/config';
 import { url } from '@casoon/pages-theme/url';
 import Diagram from '../components/Diagram.astro';
 import { clientSize, output } from '../showcase';
@@ -33,7 +34,7 @@ init({ endpoint: "/api/track" });`;
     />
     <Badges>
       <Badge>LGPL-3.0-or-later</Badge>
-      <Badge>npm 0.3.0</Badge>
+      <Badge>npm {config.version}</Badge>
       <Badge>Node 22+</Badge>
     </Badges>
     <Terminal slot="output" title="what gets stored · examples/output/event.json" dots
