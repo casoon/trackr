@@ -15,7 +15,6 @@ export default defineConfig({
       website: 'https://trackr.casoon.de',
       repo: 'casoon/trackr',
       branch: 'master',
-      version: '0.3.0',
       license: 'LGPL-3.0-or-later',
       packages: [
         { label: 'npm', href: 'https://www.npmjs.com/package/@casoon/trackr' },
