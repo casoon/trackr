@@ -5,6 +5,12 @@ All notable changes to @casoon/trackr are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-27
+
+### Changed
+
+- **Releases:** the package is published from a release workflow with npm Trusted Publishing (provenance, no stored token), after approval in the `npm` environment. The package itself is unchanged.
+
 ## [0.3.0] - 2026-10-14
 
 ### Added
