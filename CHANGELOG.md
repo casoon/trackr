@@ -7,9 +7,13 @@ All notable changes to @casoon/trackr are documented in this file. The format fo
 
 ## [0.3.1] - 2026-10-27
 
+### Fixed
+
+- **npm:** `package.json` names the repository, homepage and issue tracker, which the npm page shows and which npm provenance requires.
+
 ### Changed
 
-- **Releases:** the package is published from a release workflow with npm Trusted Publishing (provenance, no stored token), after approval in the `npm` environment. The package itself is unchanged.
+- **Releases:** the package is published from a release workflow with npm Trusted Publishing (provenance, no stored token), after approval in the `npm` environment.
 
 ## [0.3.0] - 2026-10-14
 
