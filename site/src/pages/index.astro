@@ -3,6 +3,7 @@ import {
   Badge,
   Badges,
   Button,
+  CallToAction,
   CodeBlock,
   Facts,
   Features,
@@ -103,6 +104,12 @@ init({ endpoint: "/api/track" });`;
   >
     <CodeBlock code={client} lang="ts" label="Client" />
   </Quickstart>
+
+  <CallToAction
+    title="The first stored pageview in three steps."
+    href={url('docs/getting-started/quickstart/')}
+    label="Read the quickstart"
+  />
 </Base>
 
 <style>

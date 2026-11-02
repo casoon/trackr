@@ -5,6 +5,11 @@ All notable changes to @casoon/trackr are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Changed
+
+- **Docs:** the project site uses the current shared theme (0.12.3) and ends with a link to the
+  quickstart.
+
 ## [0.3.1] - 2026-10-27
 
 ### Fixed

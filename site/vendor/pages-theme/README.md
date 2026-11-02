@@ -65,7 +65,7 @@ export const collections = { docs: docsCollection() };
 | --- | --- | --- |
 | `name`, `description`, `repo` | – | Header, meta tags, GitHub links, JSON-LD |
 | `tagline` | – | A few words for the start page's `<title>` and the OG image; see „Search engines" |
-| `website` | – | The project's landing page (`https://judge.casoon.de`): header, footer, JSON-LD `sameAs` |
+| `website` | – | The project's landing page (`https://example.com`): header, footer, JSON-LD `sameAs` |
 | `catalog` | repository name | Slug of the project's entry on casoon.dev (`#projekt-<slug>`), linked in the footer; `false` for none |
 | `version` | the project's manifest | Header badge, "Docs for vX"; see „Version" | 
 | `license` | `MIT` | SPDX id for footer and JSON-LD; `false` for proprietary code names no licence |
@@ -123,13 +123,19 @@ Import from `@casoon/pages-theme/components` in `.astro` files; available direct
 | Component | Use |
 | --- | --- |
 | `Hero` | Title, lead, default slot (install, badges), `output` slot (real output); `layout`, `command` and `tone` pick the variant |
+| `AnchorGrid` | Card grid under the hero, each linking to a section further down or out to a doc |
 | `Install` | Install command per ecosystem, CSS-only tabs, copy button; long commands wrap at spaces and after a `/` |
 | `Badge`, `Badges` | Static badges (no external badge services) |
-| `Facts` | Verifiable key figures |
-| `Features` | 3–5 core points |
+| `Facts` | Verifiable key figures; `layout="grid"` (tiles) or `"list"` (spec sheet) |
+| `Features` | Core points; `layout="numbered"` (3–5 items) or `"grid"` (an icon-tile catalog) |
+| `Spotlight` | Repeatable two-column feature section — eyebrow, title, lead, bullets, links, beside a media slot |
+| `Integrations` | Grid of what the project plugs into: icon tile, name, category |
 | `FileSet` | The files a run produced: `tabs`, `grid` or `rail` view |
 | `BuildOutput` | One real build output on the start page |
 | `Quickstart` | Steps, docs link, code slot |
+| `Keymap` | Keyboard shortcuts or CLI flags, grouped cards of label + `<kbd>` keys |
+| `ReleaseHighlights` | Teaser of one changelog release on the start page |
+| `Faq` | Native `<details>` accordion, no JS |
 | `CodeBlock` | Build-time highlighting (Shiki, theme-aware), copy button |
 | `Terminal` | `ansi` prop (converted at build time) or pre-rendered HTML as slot |
 | `Callout` | `note`, `tip`, `caution`, `deprecated` |
