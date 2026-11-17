@@ -49,6 +49,13 @@ session ID for pages and emails without JavaScript, but detects no device, brows
 - The `country` field exists on events and in the table, but the handler does not fill it.
 - Bot detection is a list of User-Agent patterns plus two header checks, not a bot-management
   service.
+- No user journeys: without cookies, pageviews cannot be joined into one path per person.
+- Sessions are approximate: the session ID comes from the anonymized IP, the User-Agent and the
+  day, so visitors behind the same network (a company, a VPN) with the same browser can end up
+  in one session.
+- No returning-visitor or cohort analysis: the ID changes every day, so a first visit cannot be
+  told from a repeat visit.
+- Self-hosting is yours to run: the endpoint, the database, updates and backups are your job.
 
 ## How the docs are organised
 
@@ -57,5 +64,8 @@ session ID for pages and emails without JavaScript, but detects no device, brows
 - **Guides**: [Privacy](guides/privacy/), [Storage adapters](guides/storage/),
   [Postgres](guides/database/), [Tracking pixel](guides/pixel/).
 - **Reference**: [API](reference/api/) and [Event fields](reference/events/).
+
+A running demo instance is at [trackr-demo.casoon.dev](https://trackr-demo.casoon.dev); its
+raw figures are at [/stats](https://trackr-demo.casoon.dev/stats).
 
 The product page is [trackr.casoon.de](https://trackr.casoon.de).

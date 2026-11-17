@@ -47,7 +47,9 @@ createHandler({
 The client IP is read from `X-Forwarded-For` (first entry) or `X-Real-IP`. With
 `anonymizeIp`, the handler sets the last IPv4 octet to `0` (IPv6: keeps the first four
 groups), hashes `anonymized IP | User-Agent | date` with SHA-256 and stores the first 16 hex
-characters as `sessionId`. The date is the UTC day, so the same visitor gets a new ID every day.
+characters as `sessionId`. The date is the UTC day, so the same visitor gets a new ID every day. The ID is therefore only an approximation of a
+visit: visitors who share a network and a browser (a company, a VPN) can end up with the same
+ID, and a returning visitor cannot be recognized from one day to the next.
 With `anonymizeIp: false` no session ID is set.
 
 Neither the IP nor the full User-Agent is stored. The handler stores the device class
