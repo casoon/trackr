@@ -285,7 +285,9 @@ WHERE type = 'event'
 GROUP BY name ORDER BY fires DESC;
 ```
 
+## Author
 
+Built and maintained by [Jörn Seidel](https://www.casoon.de/joern-seidel/) ([CASOON](https://www.casoon.de/)). Background and design decisions are described in an article on Insights (in German): [Webseiten-Analytics ohne Cookies: Warum du keinen Cookie-Banner brauchst](https://insights.casoon.de/artikel/website-analytics-ohne-cookies-trackr-dsgvo/).
 
 ## License
 
