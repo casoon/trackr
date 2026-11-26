@@ -285,6 +285,8 @@ WHERE type = 'event'
 GROUP BY name ORDER BY fires DESC;
 ```
 
+
+
 ## License
 
 LGPL-3.0-or-later
